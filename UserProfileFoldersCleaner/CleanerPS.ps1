@@ -12,7 +12,6 @@ Param
 
 Clear-Host
 
-# --- Resolve the root profiles folder ------------------------------------------
 $profilePath = if ([string]::IsNullOrWhiteSpace($ProfileLocation)) {
     Split-Path -Parent $env:USERPROFILE
 } else {
@@ -30,14 +29,13 @@ Write-Host 'Finding user profiles... ' -NoNewline
 $users = Get-ChildItem -Path $profilePath -Directory -Force -ErrorAction SilentlyContinue |
     Where-Object { $_.Name -notin $alwaysSkip -and $_.Name -notin $ExcludeUsers }
 Write-Host 'OK' -ForegroundColor Green
- 
+
 if (-not $users)
 {
     Write-Warning "No user profiles found under '$profilePath'."
     return
 }
 
-# --- Helper function: actual on-disk size of a folder's contents --------------
 function Get-FolderSize
 {
     param([string]$Path)
@@ -49,7 +47,6 @@ function Get-FolderSize
     return [double]$measure.Sum
 }
 
-# --- Disk info (single before/after measurement, not one per user) ------------
 $diskSummaryAvailable = $profilePath -match '^[A-Za-z]:\\'
 $totalSpaceBefore = $null
 $driveLetter = $null
@@ -68,7 +65,6 @@ if ($diskSummaryAvailable)
     }
 }
 
-# --- Main loop ------------------------------------------------------------------
 $userStats    = [System.Collections.Generic.List[PSCustomObject]]::new()
 $counter      = 0
 $totalUsers   = $users.Count
@@ -130,7 +126,6 @@ if ($diskSummaryAvailable)
     }
 }
 
-# --- Report -------------------------------------------------------------------
 Write-Host "`n================================================================================"
 Write-Host '                                PER-USER DETAILS'
 Write-Host '================================================================================'
